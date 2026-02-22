@@ -13,6 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'install.check' => \App\Http\Middleware\CheckInstalled::class,
+            'redirect.if.not.installed' => \App\Http\Middleware\RedirectIfNotInstalled::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
     })
 
