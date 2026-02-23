@@ -11,7 +11,7 @@
                 <td>{{ $order->customer_name }}</td>
                 <td>{{ number_format($order->total) }} تومان</td>
                 <td>{{ $order->status }}</td>
-                <td>{{ $order->created_at->format('Y/m/d H:i') }}</td>
+                <td>{{ \App\Helpers\Jalali::formatFa($order->created_at, 'Y/m/d H:i') }}</td>
                 <td><a href="{{ route('admin.orders.show', $order) }}" class="btn btn-primary">مشاهده</a></td>
             </tr>
         @endforeach

@@ -24,7 +24,8 @@ class LicenseController extends Controller
             'domain' => 'nullable|string|max:255',
         ]);
 
-        $domain = $request->filled('domain') ? $request->domain : $request->getHost();
+        $domainRaw = $request->filled('domain') ? $request->domain : $request->getHost();
+        $domain = $this->normalizeDomain($domainRaw);
 
         $result = $activationService->validate($request->license_key, $domain);
 
@@ -74,5 +75,16 @@ class LicenseController extends Controller
         }
 
         return back()->with('success', 'نسخهٔ نصب‌شده به‌روز است. (فعلی: ' . $currentVersion . ')');
+    }
+
+    private function normalizeDomain(string $domain): string
+    {
+        $domain = trim($domain);
+        if (str_contains($domain, '://')) {
+            $parsed = parse_url($domain);
+            $domain = $parsed['host'] ?? $domain;
+        }
+        $domain = rtrim($domain, '/');
+        return strtolower($domain);
     }
 }
