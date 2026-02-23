@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\License;
 use App\Models\Setting;
 
 class SiteHelper
@@ -11,14 +12,33 @@ class SiteHelper
         return Setting::get('theme', config('site.theme', 'default'));
     }
 
+    /**
+     * فعال بودن ماژول فروشگاه: اول از لایسنس/پلتفرم، در غیر صورت از config و .env.
+     */
     public static function shopEnabled(): bool
     {
-        return Module::enabled('shop');
+        return self::moduleEnabledFromLicenseOrConfig('shop');
     }
 
+    /**
+     * فعال بودن ماژول وبلاگ: اول از لایسنس/پلتفرم، در غیر صورت از config و .env.
+     */
     public static function blogEnabled(): bool
     {
-        return Module::enabled('blog');
+        return self::moduleEnabledFromLicenseOrConfig('blog');
+    }
+
+    /**
+     * منبع حقیقت برای ماژول‌ها پلتفرم است؛ در صورت لایسنس معتبر از modules لایسنس استفاده می‌شود، وگرنه fallback به config + .env.
+     */
+    protected static function moduleEnabledFromLicenseOrConfig(string $key): bool
+    {
+        $license = License::current();
+        if ($license && $license->isValid()) {
+            $modules = $license->modules ?? [];
+            return is_array($modules) && in_array($key, $modules, true);
+        }
+        return Module::enabled($key);
     }
 
     public static function siteName(): string
