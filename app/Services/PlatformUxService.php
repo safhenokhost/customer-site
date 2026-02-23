@@ -128,6 +128,9 @@ class PlatformUxService
      */
     protected function fetchUxFromPlatform(): ?array
     {
+        if (config('site.owner_site') && !License::current()) {
+            return null;
+        }
         $license = License::current();
         if (!$license || empty($license->license_key)) {
             return null;

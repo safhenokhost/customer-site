@@ -7,27 +7,46 @@ use App\Helpers\SiteHelper;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Page;
+use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (! SiteHelper::blogEnabled()) {
             abort(404);
         }
-        $posts = Post::published()->latest('published_at')->paginate(9);
+        $query = Post::published()->latest('published_at');
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($qb) use ($search) {
+                $qb->where('title', 'like', "%{$search}%")
+                    ->orWhere('body', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+        $posts = $query->paginate(9)->withQueryString();
         $categories = Category::orderBy('order')->get();
         $pages = Page::published()->menu()->get();
         return view(SiteHelper::view('blog.index'), compact('posts', 'categories', 'pages'));
     }
 
-    public function category(string $slug)
+    public function category(Request $request, string $slug)
     {
         if (! SiteHelper::blogEnabled()) {
             abort(404);
         }
         $category = Category::where('slug', $slug)->firstOrFail();
-        $posts = Post::published()->where('category_id', $category->id)->latest('published_at')->paginate(9);
+        $query = Post::published()->where('category_id', $category->id)->latest('published_at');
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($qb) use ($search) {
+                $qb->where('title', 'like', "%{$search}%")
+                    ->orWhere('body', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+        $posts = $query->paginate(9)->withQueryString();
         $categories = Category::orderBy('order')->get();
         $pages = Page::published()->menu()->get();
         return view(SiteHelper::view('blog.index'), compact('posts', 'categories', 'pages', 'category'));

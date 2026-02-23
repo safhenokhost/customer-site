@@ -30,15 +30,28 @@ class SiteHelper
 
     /**
      * منبع حقیقت برای ماژول‌ها پلتفرم است؛ در صورت لایسنس معتبر از modules لایسنس استفاده می‌شود، وگرنه fallback به config + .env.
+     * در حالت سایت مالک (OWNER_SITE=true) همیشه از config + .env استفاده می‌شود و لایسنس الزامی نیست.
      */
     protected static function moduleEnabledFromLicenseOrConfig(string $key): bool
     {
+        if (self::isOwnerSite()) {
+            return Module::enabled($key);
+        }
         $license = License::current();
         if ($license && $license->isValid()) {
             $modules = $license->modules ?? [];
             return is_array($modules) && in_array($key, $modules, true);
         }
         return Module::enabled($key);
+    }
+
+    /**
+     * آیا این نصب به‌عنوان سایت مالک (سایت فروش شما) تنظیم شده است؟
+     * در این حالت لایسنس اختیاری است و ماژول‌ها از .env خوانده می‌شوند.
+     */
+    public static function isOwnerSite(): bool
+    {
+        return (bool) config('site.owner_site', false);
     }
 
     public static function siteName(): string

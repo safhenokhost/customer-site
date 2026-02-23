@@ -31,6 +31,13 @@
 
 **قانون:** همهٔ مدیریت‌ها (سایت، ماژول، فرم، مشتری، تنظیمات ظاهری) فقط از **saas-platform** انجام می‌شود. **customer-site** مصرف‌کنندهٔ API و تنظیمات پلتفرم است.
 
+### ۱.۱ استراتژی سئو و امنیت
+
+- **سایت فروش (عمومی):** نمونهٔ **customer-site** که شما برای فروش محصولات و پشتیبانی استفاده می‌کنید، تنها سایت عمومی و قابل ایندکس در موتورهای جستجو است. سئو (متا، sitemap، JSON-LD) روی همین سایت فعال است.
+- **پلتفرم (مدیریت):** **saas-platform** نباید در نتایج جستجو ظاهر شود. در پلتفرم با `robots.txt` (Disallow: /)، متا `noindex, nofollow` و هدر `X-Robots-Tag` از ایندکس شدن جلوگیری می‌شود. در سایت فروش به آدرس پلتفرم لینک عمومی داده نمی‌شود.
+
+**جستجو:** `robots` ، `noindex` ، `سئو` ، `امنیت`
+
 ---
 
 ## ۲. متغیرهای محیطی (.env)
@@ -56,8 +63,9 @@
 | `SITE_NAME` | نام سایت (پیش‌فرض در config) | customer-site |
 | `SITE_THEME` | تم فرانت | customer-site |
 | `SITE_LOCALE` | زبان | customer-site |
+| `OWNER_SITE` | وقتی `true`: سایت به‌عنوان سایت مالک/فروش شما؛ لایسنس اختیاری و ماژول‌ها از .env | customer-site |
 
-**جستجو:** `.env` ، `PLATFORM_URL` ، `MODULE_SHOP_ENABLED` ، `MODULE_BLOG_ENABLED`
+**جستجو:** `.env` ، `PLATFORM_URL` ، `OWNER_SITE` ، `MODULE_SHOP_ENABLED` ، `MODULE_BLOG_ENABLED`
 
 ---
 
@@ -126,7 +134,7 @@
 | `page.show` | `/page/{slug}` | صفحه |
 | `contact.show` / `contact.submit` | `/contact` | تماس |
 | `blog.index` ، `blog.show` | `/blog` ، `/blog/{slug}` | وبلاگ |
-| `shop.index` ، `shop.show` ، `shop.cart` ، `shop.checkout` | `/shop` ، ... | فروشگاه (در صورت فعال بودن ماژول) |
+| `shop.index` ، `shop.show` ، `shop.cart` ، `shop.cart.update` ، `shop.cart.remove` ، `shop.checkout` | `/shop` ، ... | فروشگاه (در صورت فعال بودن ماژول) |
 | `admin.dashboard` | `/admin/dashboard` | داشبورد ادمین |
 | `admin.license.index` | `/admin/license` | لایسنس (وارد کردن کلید و دامنه) |
 | `admin.settings.index` | `/admin/settings` | تنظیمات سایت |
@@ -137,6 +145,8 @@
 **جستجو:** `routes` ، `customer-site` ، `admin` ، `sitemap`
 
 **SEO:** متا (title، description)، canonical، OpenGraph و Twitter Card در layout فرانت؛ JSON-LD (Organization، WebPage، Article، Product) در صفحات مربوط؛ helperهای `Seo::title/description/imageUrl` و `JsonLd::*` در `app/Helpers`.
+
+**UX:** راهنمای مراحل بهبود UX در `docs/UX-ROADMAP.md`. Layout واکنش‌گرا با منوی موبایل، Hero در خانه، کارت‌های محتوا، فرم‌های استایل‌شده و Breadcrumb.
 
 ---
 
@@ -267,8 +277,11 @@
 | `php artisan user:set-mobile --email=... --mobile=0912...` | تنظیم موبایل کاربر برای ورود |
 | `php artisan user:make-admin --email=...` یا `--id=...` یا `--mobile=...` | ادمین کردن کاربر برای دسترسی به پنل |
 | `php artisan migrate` | اجرای مایگریشن‌ها (مثلاً اضافه شدن ستون mobile به users) |
+| `php artisan test` | اجرای تست‌ها. نیاز به دیتابیس MySQL با نام `customer_site_test` دارد (یا فعال بودن pdo_sqlite برای SQLite درون‌حافظه). |
 
-**جستجو:** `artisan` ، `user:set-mobile` ، `user:make-admin`
+**جستجو:** `artisan` ، `user:set-mobile` ، `user:make-admin` ، `test`
+
+**تست‌ها:** در **phpunit.xml** برای تست‌ها از MySQL با دیتابیس `customer_site_test` استفاده می‌شود. قبل از اجرای تست‌ها دیتابیس را بسازید: `CREATE DATABASE customer_site_test;` (یا از phpMyAdmin). اگر pdo_sqlite در PHP فعال است، می‌توانید در phpunit.xml به `sqlite` و `:memory:` برگردانید.
 
 ### saas-platform
 
