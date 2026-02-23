@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Helpers\PlatformUx;
 use App\Http\Controllers\Controller;
 use App\Models\License;
+use App\Services\LicenseActivationService;
+use App\Services\UpdateCheckService;
 use Illuminate\Http\Request;
 
 class LicenseController extends Controller
@@ -14,33 +17,62 @@ class LicenseController extends Controller
         return view('admin.licenses.index', compact('license'));
     }
 
-    public function update(Request $request)
+    public function update(Request $request, LicenseActivationService $activationService)
     {
         $request->validate([
-            'license_key' => 'nullable|string|max:255',
+            'license_key' => 'required|string|max:255',
             'domain' => 'nullable|string|max:255',
-            'expires_at' => 'nullable|date',
         ]);
 
+        $domain = $request->filled('domain') ? $request->domain : $request->getHost();
+
+        $result = $activationService->validate($request->license_key, $domain);
+
+        if (empty($result['valid'])) {
+            return back()
+                ->withInput($request->only('license_key', 'domain'))
+                ->with('error', $result['message'] ?? 'لایسنس معتبر نیست.');
+        }
+
         $license = License::current();
-        $key = $request->filled('license_key') ? $request->license_key : ($license ? $license->license_key : null);
-        $domain = $request->filled('domain') ? $request->domain : ($license ? $license->domain : null);
-        $expiresAt = $request->filled('expires_at') ? $request->expires_at : ($license && $license->expires_at ? $license->expires_at->toDateTimeString() : null);
+        $data = [
+            'license_key' => $request->license_key,
+            'domain' => $domain,
+            'expires_at' => isset($result['expires_at']) ? $result['expires_at'] : null,
+            'modules' => $result['modules'] ?? null,
+            'support_expires_at' => $result['support_expires_at'] ?? null,
+        ];
 
         if ($license) {
-            $license->update([
-                'license_key' => $key,
-                'domain' => $domain,
-                'expires_at' => $expiresAt,
-            ]);
+            $license->update($data);
         } else {
-            License::create([
-                'license_key' => $key,
-                'domain' => $domain,
-                'expires_at' => $expiresAt,
+            License::create($data);
+        }
+
+        PlatformUx::clearCache();
+
+        return back()->with('success', 'لایسنس با موفقیت فعال شد.');
+    }
+
+    /**
+     * بررسی بروزرسانی از پلتفرم
+     */
+    public function checkUpdate(UpdateCheckService $updateCheck)
+    {
+        $currentVersion = config('app.version', '1.0.0');
+        $result = $updateCheck->check($currentVersion);
+
+        if (!$result['success']) {
+            return back()->with('error', $result['message'] ?? 'بررسی بروزرسانی ناموفق بود.');
+        }
+
+        if (!empty($result['update_available'])) {
+            return back()->with('update_available', [
+                'latest_version' => $result['latest_version'],
+                'changelog' => $result['changelog'],
             ]);
         }
 
-        return back()->with('success', 'اطلاعات لایسنس ذخیره شد.');
+        return back()->with('success', 'نسخهٔ نصب‌شده به‌روز است. (فعلی: ' . $currentVersion . ')');
     }
 }

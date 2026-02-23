@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'تنظیمات')
-
+@section('content')
 <h1>تنظیمات سایت</h1>
 <form action="{{ route('admin.settings.update') }}" method="post">
     @csrf
@@ -20,3 +20,4 @@
         </li>
     @endforeach
 </ul>
+@endsection

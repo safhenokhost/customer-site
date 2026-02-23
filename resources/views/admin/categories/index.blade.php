@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'دسته‌بندی‌های وبلاگ')
-
+@section('content')
 <div class="header">
     <h1>دسته‌بندی‌های وبلاگ</h1>
     <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">دسته جدید</a>
@@ -20,3 +20,4 @@
         @endforeach
     </tbody>
 </table>
+@endsection

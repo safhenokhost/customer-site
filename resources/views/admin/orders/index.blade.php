@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'سفارشات')
-
+@section('content')
 <h1>سفارشات</h1>
 <table>
     <thead><tr><th>شماره</th><th>مشتری</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th><th></th></tr></thead>
@@ -18,3 +18,4 @@
     </tbody>
 </table>
 {{ $orders->links() }}
+@endsection

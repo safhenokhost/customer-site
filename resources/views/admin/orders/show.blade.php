@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'سفارش ' . $order->number)
-
+@section('content')
 <h1>سفارش {{ $order->number }}</h1>
 <p><strong>مشتری:</strong> {{ $order->customer_name }} — {{ $order->customer_email }} — {{ $order->customer_phone }}</p>
 <p><strong>آدرس:</strong> {{ $order->customer_address }}</p>
@@ -36,3 +36,4 @@
 </table>
 <p><strong>جمع کل:</strong> {{ number_format($order->total) }} تومان</p>
 <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">بازگشت</a>
+@endsection

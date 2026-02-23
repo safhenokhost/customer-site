@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'صفحات')
-
+@section('content')
 <div class="header">
     <h1>صفحات</h1>
     <a href="{{ route('admin.pages.create') }}" class="btn btn-primary">صفحه جدید</a>
@@ -22,3 +22,4 @@
         @endforeach
     </tbody>
 </table>
+@endsection

@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'محصولات')
-
+@section('content')
 <div class="header">
     <h1>محصولات</h1>
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary">محصول جدید</a>
@@ -29,3 +29,4 @@
     </tbody>
 </table>
 {{ $products->links() }}
+@endsection

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\Module;
 use App\Helpers\SiteHelper;
+use App\Models\License;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\Order;
@@ -22,6 +24,17 @@ class DashboardController extends Controller
         $recentOrders = SiteHelper::shopEnabled()
             ? Order::latest()->take(5)->get()
             : collect();
-        return view('admin.dashboard', compact('stats', 'recentOrders'));
+
+        $license = License::current();
+        $modulesFromPlatform = $license && is_array($license->modules) ? $license->modules : [];
+        $localModules = Module::all();
+
+        return view('admin.dashboard', compact(
+            'stats',
+            'recentOrders',
+            'license',
+            'modulesFromPlatform',
+            'localModules'
+        ));
     }
 }

@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'ویرایش محصول')
-
+@section('content')
 <h1>ویرایش محصول</h1>
 <form action="{{ route('admin.products.update', $product) }}" method="post">
     @csrf
@@ -15,3 +15,4 @@
     <button type="submit" class="btn btn-primary">ذخیره</button>
     <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">انصراف</a>
 </form>
+@endsection

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\LicenseController as AdminLicenseController;
+use App\Http\Controllers\GuideSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::middleware('redirect.if.not.installed')->group(function () {
     Route::get('/page/{slug}', [FrontPageController::class, 'show'])->name('page.show');
     Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
     Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+    Route::get('/guide-search', [GuideSearchController::class, 'index'])->name('guide.search');
 
     Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('/blog/category/{slug}', [BlogController::class, 'category'])->name('blog.category');
@@ -76,6 +78,7 @@ Route::middleware('redirect.if.not.installed')->group(function () {
         Route::post('settings', [AdminSettingController::class, 'update'])->name('settings.update');
         Route::get('license', [AdminLicenseController::class, 'index'])->name('license.index');
         Route::post('license', [AdminLicenseController::class, 'update'])->name('license.update');
+        Route::post('license/check-update', [AdminLicenseController::class, 'checkUpdate'])->name('license.check-update');
         Route::get('/', fn () => redirect()->route('admin.dashboard'));
     });
 });

@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'مطالب وبلاگ')
-
+@section('content')
 <div class="header">
     <h1>مطالب وبلاگ</h1>
     <a href="{{ route('admin.posts.create') }}" class="btn btn-primary">مطلب جدید</a>
@@ -23,3 +23,4 @@
     </tbody>
 </table>
 {{ $posts->links() }}
+@endsection

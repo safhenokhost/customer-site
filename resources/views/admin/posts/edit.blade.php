@@ -1,6 +1,6 @@
 @extends('admin.layout')
 @section('title', 'ویرایش مطلب')
-
+@section('content')
 <h1>ویرایش مطلب</h1>
 <form action="{{ route('admin.posts.update', $post) }}" method="post">
     @csrf
@@ -21,3 +21,4 @@
     <button type="submit" class="btn btn-primary">ذخیره</button>
     <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">انصراف</a>
 </form>
+@endsection

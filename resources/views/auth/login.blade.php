@@ -1,35 +1,55 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ورود — پنل مدیریت</title>
-    <style>
-        body { font-family: Tahoma, Arial, sans-serif; background: #f1f5f9; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-        .box { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.08); max-width: 360px; width: 100%; }
-        h1 { margin-bottom: 1.25rem; font-size: 1.25rem; }
-        label { display: block; margin-bottom: .35rem; font-weight: 600; }
-        input { width: 100%; padding: .6rem .75rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 1rem; }
-        button { width: 100%; padding: .65rem; background: #2563eb; color: #fff; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; }
-        button:hover { background: #1d4ed8; }
-        .error { color: #dc2626; font-size: .9rem; margin-bottom: .5rem; }
-    </style>
-</head>
-<body>
-    <div class="box">
-        <h1>ورود به پنل مدیریت</h1>
-        @error('email')
-            <p class="error">{{ $message }}</p>
-        @enderror
-        <form method="post" action="{{ route('login') }}">
+@extends('layouts.auth')
+
+@section('title', 'ورود')
+
+@section('content')
+<div class="flex justify-center px-4">
+    <div class="card w-full max-w-md p-6">
+        <h2 class="text-xl font-bold mb-6 text-center">
+            ورود به پنل مدیریت
+        </h2>
+
+        @if ($errors->any())
+            <div class="alert alert-danger text-sm">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
-            <label>ایمیل</label>
-            <input type="email" name="email" value="{{ old('email') }}" required autofocus>
-            <label>رمز عبور</label>
-            <input type="password" name="password" required>
-            <label style="display:flex;align-items:center;"><input type="checkbox" name="remember"> به خاطر بسپار</label>
-            <button type="submit">ورود</button>
+
+            <div>
+                <label class="form-label">موبایل</label>
+                <input type="text"
+                       name="mobile"
+                       value="{{ old('mobile') }}"
+                       placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
+                       class="form-control"
+                       required
+                       dir="rtl"
+                       autocomplete="tel">
+            </div>
+
+            <div>
+                <label class="form-label">رمز عبور</label>
+                <input type="password"
+                       name="password"
+                       placeholder="رمز عبور خود را وارد کنید"
+                       class="form-control"
+                       required
+                       dir="rtl"
+                       autocomplete="current-password">
+            </div>
+
+            <label style="display:flex;align-items:center;gap:0.5rem;">
+                <input type="checkbox" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
+                <span>به خاطر بسپار</span>
+            </label>
+
+            <button type="submit" class="btn btn-primary w-full">
+                ورود
+            </button>
         </form>
     </div>
-</body>
-</html>
+</div>
+@endsection

@@ -6,12 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class License extends Model
 {
-    protected $fillable = ['license_key', 'domain', 'expires_at'];
+    protected $fillable = [
+        'license_key',
+        'domain',
+        'expires_at',
+        'modules',
+        'support_expires_at',
+    ];
 
     protected function casts(): array
     {
         return [
             'expires_at' => 'datetime',
+            'support_expires_at' => 'datetime',
+            'modules' => 'array',
         ];
     }
 
