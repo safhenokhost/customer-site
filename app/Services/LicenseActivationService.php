@@ -22,22 +22,36 @@ class LicenseActivationService
         }
 
         $url = $baseUrl . '/api/license/validate';
+        $domainNormalized = $this->normalizeDomain($domain);
         try {
             $response = Http::timeout(10)
+                ->acceptJson()
                 ->post($url, [
                     'license_key' => $licenseKey,
-                    'domain' => $domain,
+                    'domain' => $domainNormalized,
                 ]);
 
             if (!$response->successful()) {
+                $status = $response->status();
+                $rawBody = $response->body();
+                $body = $response->json();
                 Log::warning('License API HTTP error', [
-                    'status' => $response->status(),
+                    'status' => $status,
                     'url' => $url,
+                    'body' => $rawBody,
                 ]);
+                $apiMessage = is_array($body) && isset($body['message']) && (string) $body['message'] !== '' ? (string) $body['message'] : null;
+                if ($apiMessage !== null) {
+                    $message = $apiMessage;
+                } elseif (config('app.debug')) {
+                    $message = 'خطا در ارتباط با سرور لایسنس (HTTP ' . $status . '). اگر بالا پیام خطا نیست، در customer-site فایل storage/logs/laravel.log را باز کنید و آخرین خط «License API HTTP error» را ببینید.';
+                } else {
+                    $message = 'خطا در ارتباط با سرور لایسنس. بعداً تلاش کنید.';
+                }
                 return [
                     'valid' => false,
                     'error' => 'api_error',
-                    'message' => 'خطا در ارتباط با سرور لایسنس. بعداً تلاش کنید.',
+                    'message' => $message,
                 ];
             }
 
@@ -56,19 +70,41 @@ class LicenseActivationService
                 'expired' => 'تاریخ انقضای لایسنس گذشته است.',
                 'domain_mismatch' => 'دامنهٔ این سایت با لایسنس مطابقت ندارد.',
                 'site_inactive' => 'سایت در پلتفرم غیرفعال است.',
+                'server_error' => 'خطای سرور لایسنس. بعداً تلاش کنید.',
             ];
+            $message = !empty($data['message'])
+                ? $data['message']
+                : ($messages[$data['error'] ?? ''] ?? 'لایسنس معتبر نیست.');
             return [
                 'valid' => false,
                 'error' => $data['error'] ?? 'unknown',
-                'message' => $messages[$data['error'] ?? ''] ?? 'لایسنس معتبر نیست.',
+                'message' => $message,
             ];
         } catch (\Throwable $e) {
-            Log::error('License validation exception', ['message' => $e->getMessage(), 'url' => $url]);
+            Log::error('License validation exception', [
+                'message' => $e->getMessage(),
+                'url' => $url,
+                'exception' => get_class($e),
+            ]);
             return [
                 'valid' => false,
                 'error' => 'connection_error',
-                'message' => 'امکان ارتباط با سرور لایسنس وجود ندارد. اتصال اینترنت و آدرس پلتفرم را بررسی کنید.',
+                'message' => 'امکان ارتباط با سرور لایسنس وجود ندارد. اتصال اینترنت و آدرس پلتفرم (PLATFORM_URL در .env) را بررسی کنید.',
             ];
         }
+    }
+
+    /**
+     * استخراج فقط host از دامنه (اگر کاربر آدرس کامل وارد کرده باشد).
+     */
+    private function normalizeDomain(string $domain): string
+    {
+        $domain = trim($domain);
+        if (str_contains($domain, '://')) {
+            $parsed = parse_url($domain);
+            $domain = $parsed['host'] ?? $domain;
+        }
+        $domain = rtrim($domain, '/');
+        return strtolower($domain);
     }
 }

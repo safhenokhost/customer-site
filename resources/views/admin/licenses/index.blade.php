@@ -22,9 +22,9 @@
         <tr><th style="width: 140px;">وضعیت</th><td><strong>{{ $license->statusLabel() }}</strong></td></tr>
         <tr><th>کلید (نمایش)</th><td><code>{{ $license->maskedKey() }}</code></td></tr>
         <tr><th>دامنه</th><td>{{ $license->domain ?: '—' }}</td></tr>
-        <tr><th>تاریخ انقضا</th><td>{{ $license->expires_at ? $license->expires_at->format('Y/m/d') : '—' }}</td></tr>
+        <tr><th>تاریخ انقضا</th><td>{{ $license->expires_at ? \App\Helpers\Jalali::formatFa($license->expires_at, 'Y/m/d') : '—' }}</td></tr>
         @if($license->support_expires_at)
-        <tr><th>انقضای پشتیبانی</th><td>{{ $license->support_expires_at->format('Y/m/d') }}</td></tr>
+        <tr><th>انقضای پشتیبانی</th><td>{{ \App\Helpers\Jalali::formatFa($license->support_expires_at, 'Y/m/d') }}</td></tr>
         @endif
         @if(!empty($license->modules))
         <tr><th>ماژول‌های فعال</th><td>{{ implode('، ', $license->modules) }}</td></tr>

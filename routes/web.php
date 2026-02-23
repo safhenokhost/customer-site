@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\LicenseController as AdminLicenseController;
 use App\Http\Controllers\GuideSearchController;
+use App\Http\Controllers\Front\SitemapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,7 @@ Route::middleware('redirect.if.not.installed')->group(function () {
     Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
     Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
     Route::get('/guide-search', [GuideSearchController::class, 'index'])->name('guide.search');
+    Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
     Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
     Route::get('/blog/category/{slug}', [BlogController::class, 'category'])->name('blog.category');

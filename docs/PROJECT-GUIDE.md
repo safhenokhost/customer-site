@@ -131,8 +131,12 @@
 | `admin.license.index` | `/admin/license` | لایسنس (وارد کردن کلید و دامنه) |
 | `admin.settings.index` | `/admin/settings` | تنظیمات سایت |
 | `admin.pages.*` ، `admin.posts.*` ، `admin.products.*` ، `admin.orders.*` | ... | صفحات، مطالب، محصولات، سفارشات |
+| `sitemap` | `/sitemap.xml` | نقشهٔ سایت (کش ۱ ساعته؛ برای موتورهای جستجو) |
+| `guide.search` | GET `/guide-search?q=` | جستجو در راهنما (JSON) |
 
-**جستجو:** `routes` ، `customer-site` ، `admin`
+**جستجو:** `routes` ، `customer-site` ، `admin` ، `sitemap`
+
+**SEO:** متا (title، description)، canonical، OpenGraph و Twitter Card در layout فرانت؛ JSON-LD (Organization، WebPage، Article، Product) در صفحات مربوط؛ helperهای `Seo::title/description/imageUrl` و `JsonLd::*` در `app/Helpers`.
 
 ---
 
@@ -225,8 +229,8 @@
 ### در سایت مشتری (customer-site)
 
 - ماژول‌های قابل استفاده در **config/modules.php** تعریف شده‌اند (مثلاً blog، shop).
-- فعال/غیرفعال واقعی با **.env** کنترل می‌شود: `MODULE_BLOG_ENABLED` ، `MODULE_SHOP_ENABLED`.
-- لیست ماژول‌های **دریافتی از پلتفرم** در مدل **License** (فیلد `modules`) ذخیره و در داشبورد در بلوک **«ماژول‌ها و امکانات از پلتفرم»** نمایش داده می‌شود (مقایسهٔ «از پلتفرم» با «فعال در این سایت»).
+- **منبع حقیقت برای فعال/غیرفعال:** در صورت وجود لایسنس معتبر، `SiteHelper::blogEnabled()` و `shopEnabled()` از فیلد **modules** مدل **License** (دریافتی از پلتفرم) استفاده می‌کنند؛ در صورت نبود یا نامعتبر بودن لایسنس، fallback به **.env** (`MODULE_BLOG_ENABLED` ، `MODULE_SHOP_ENABLED`) است.
+- لیست ماژول‌های **دریافتی از پلتفرم** در مدل **License** (فیلد `modules`) ذخیره و در داشبورد در بلوک **«ماژول‌ها و امکانات از پلتفرم»** نمایش داده می‌شود.
 
 **جستجو:** `MODULE_BLOG_ENABLED` ، `MODULE_SHOP_ENABLED` ، `Module::enabled` ، `SiteHelper::shopEnabled`
 

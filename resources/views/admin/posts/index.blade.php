@@ -13,7 +13,7 @@
                 <td>{{ $p->title }}</td>
                 <td>{{ $p->category?->name ?? '—' }}</td>
                 <td>{{ $p->is_published ? 'منتشر شده' : 'پیش‌نویس' }}</td>
-                <td>{{ $p->created_at->format('Y/m/d') }}</td>
+                <td>{{ \App\Helpers\Jalali::formatFa($p->created_at, 'Y/m/d') }}</td>
                 <td>
                     <a href="{{ route('admin.posts.edit', $p) }}" class="btn btn-primary">ویرایش</a>
                     <form method="post" action="{{ route('admin.posts.destroy', $p) }}" style="display:inline;" onsubmit="return confirm('حذف شود؟');">@csrf @method('DELETE')<button type="submit" class="btn btn-danger">حذف</button></form>

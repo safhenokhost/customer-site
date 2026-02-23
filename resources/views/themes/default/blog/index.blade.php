@@ -6,7 +6,7 @@
 @forelse($posts as $post)
 <li style="padding:.75rem 0; border-bottom:1px solid #e2e8f0;">
 <a href="{{ route('blog.show', $post->slug) }}">{{ $post->title }}</a>
-<span style="color:#64748b;"> — {{ $post->published_at?->format('Y/m/d') }}</span>
+<span style="color:#64748b;"> — {{ $post->published_at ? \App\Helpers\Jalali::formatFa($post->published_at, 'Y/m/d') : '' }}</span>
 </li>
 @empty
 <li>مطلبی یافت نشد.</li>
