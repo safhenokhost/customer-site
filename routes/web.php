@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ProductCategoryController as AdminProductCategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\LicenseController as AdminLicenseController;
@@ -63,6 +64,8 @@ Route::middleware('redirect.if.not.installed')->group(function () {
     Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
     Route::get('/shop/{slug}', [ShopController::class, 'show'])->name('shop.show');
     Route::post('/shop/cart/add', [ShopController::class, 'addToCart'])->name('shop.cart.add');
+    Route::post('/shop/cart/update', [ShopController::class, 'updateCart'])->name('shop.cart.update');
+    Route::post('/shop/cart/remove/{productId}', [ShopController::class, 'removeFromCart'])->name('shop.cart.remove');
     Route::get('/shop/cart', [ShopController::class, 'cart'])->name('shop.cart');
     Route::post('/shop/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
 
@@ -72,6 +75,7 @@ Route::middleware('redirect.if.not.installed')->group(function () {
         Route::resource('pages', AdminPageController::class);
         Route::resource('categories', AdminCategoryController::class)->except('show');
         Route::resource('posts', AdminPostController::class);
+        Route::resource('product-categories', AdminProductCategoryController::class)->except('show');
         Route::resource('products', AdminProductController::class);
         Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');

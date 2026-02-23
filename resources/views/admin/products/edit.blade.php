@@ -7,6 +7,7 @@
     @method('PUT')
     <div class="form-group"><label>عنوان</label><input type="text" name="title" value="{{ old('title', $product->title) }}" required></div>
     <div class="form-group"><label>نامک</label><input type="text" name="slug" value="{{ old('slug', $product->slug) }}"></div>
+    <div class="form-group"><label>دسته‌بندی</label><select name="category_id"><option value="">بدون دسته</option>@foreach($categories ?? [] as $cat)<option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>@endforeach</select></div>
     <div class="form-group"><label>قیمت (تومان)</label><input type="number" name="price" value="{{ old('price', $product->price) }}" min="0" required></div>
     <div class="form-group"><label>قیمت با تخفیف</label><input type="number" name="sale_price" value="{{ old('sale_price', $product->sale_price) }}" min="0"></div>
     <div class="form-group"><label>موجودی</label><input type="number" name="stock" value="{{ old('stock', $product->stock) }}" min="0"></div>

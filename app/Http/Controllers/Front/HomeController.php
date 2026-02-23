@@ -7,6 +7,7 @@ use App\Helpers\SiteHelper;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\Page;
+use App\Models\Setting;
 
 class HomeController extends Controller
 {
@@ -19,7 +20,10 @@ class HomeController extends Controller
             ? Product::active()->orderBy('order')->take(4)->get()
             : collect();
         $pages = Page::published()->menu()->get();
+        $aboutUsEnabled = (bool) Setting::get('about_us_enabled', false);
+        $aboutUsTitle = Setting::get('about_us_title', 'درباره ما');
+        $aboutUsText = Setting::get('about_us_text', '');
 
-        return view(SiteHelper::view('home'), compact('recentPosts', 'featuredProducts', 'pages'));
+        return view(SiteHelper::view('home'), compact('recentPosts', 'featuredProducts', 'pages', 'aboutUsEnabled', 'aboutUsTitle', 'aboutUsText'));
     }
 }

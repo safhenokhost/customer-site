@@ -3,6 +3,12 @@
 @section('content')
 <h1>لایسنس</h1>
 
+@if(\App\Helpers\SiteHelper::isOwnerSite())
+    <p style="background: #ecfdf5; color: #065f46; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #a7f3d0;">
+        <strong>سایت مالک:</strong> این نصب به‌عنوان سایت فروش شما تنظیم شده است. لایسنس اختیاری است؛ سایت بدون لایسنس با تنظیمات پیش‌فرض و ماژول‌های .env کار می‌کند. در صورت وارد کردن لایسنس، بروزرسانی و ظاهر از پلتفرم دریافت می‌شود.
+    </p>
+@endif
+
 @if(session('success'))
     <p style="color: green; margin-bottom: 1rem;">{{ session('success') }}</p>
 @endif
@@ -36,7 +42,7 @@
 @endif
 
 <h2 style="font-size: 1.1rem; margin-bottom: 0.75rem;">فعال‌سازی / بروزرسانی لایسنس</h2>
-<p style="font-size: .9rem; color: #64748b; margin-bottom: 1rem;">کلید لایسنس را از پلتفرم دریافت کرده و اینجا وارد کنید. اعتبار از طریق سرور پلتفرم بررسی می‌شود.</p>
+<p style="font-size: .9rem; color: #64748b; margin-bottom: 1rem;">کلید لایسنس را از پلتفرم دریافت کرده و اینجا وارد کنید. اعتبار از طریق سرور پلتفرم بررسی می‌شود.@if(\App\Helpers\SiteHelper::isOwnerSite()) در حالت سایت مالک این فیلد اختیاری است.@endif</p>
 @if($license)
 <form action="{{ route('admin.license.check-update') }}" method="post" style="display: inline-block; margin-left: 8px;">
     @csrf
@@ -46,8 +52,8 @@
 <form action="{{ route('admin.license.update') }}" method="post" style="max-width: 480px;">
     @csrf
     <div class="form-group">
-        <label>کلید لایسنس</label>
-        <input type="text" name="license_key" value="{{ old('license_key') }}" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" required>
+        <label>کلید لایسنس @if(\App\Helpers\SiteHelper::isOwnerSite())(اختیاری)@endif</label>
+        <input type="text" name="license_key" value="{{ old('license_key') }}" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" @if(!\App\Helpers\SiteHelper::isOwnerSite()) required @endif>
     </div>
     <div class="form-group">
         <label>دامنه این سایت (خالی = دامنه فعلی)</label>

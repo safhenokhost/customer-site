@@ -12,14 +12,27 @@ use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (! SiteHelper::shopEnabled()) {
             abort(404);
         }
-        $products = Product::active()->orderBy('order')->paginate(12);
+        $query = Product::active()->with('category')->orderBy('order');
+        if ($request->filled('category')) {
+            $query->whereHas('category', fn ($qb) => $qb->where('slug', $request->category));
+        }
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($qb) use ($search) {
+                $qb->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%");
+            });
+        }
+        $products = $query->paginate(12)->withQueryString();
+        $categories = \App\Models\ProductCategory::orderBy('order')->get();
         $pages = Page::published()->menu()->get();
-        return view(SiteHelper::view('shop.index'), compact('products', 'pages'));
+        return view(SiteHelper::view('shop.index'), compact('products', 'categories', 'pages'));
     }
 
     public function show(string $slug)
@@ -61,6 +74,35 @@ class ShopController extends Controller
         $cart = session()->get('cart', []);
         $pages = Page::published()->menu()->get();
         return view(SiteHelper::view('shop.cart'), compact('cart', 'pages'));
+    }
+
+    public function updateCart(Request $request)
+    {
+        if (! SiteHelper::shopEnabled()) {
+            abort(404);
+        }
+        $request->validate(['product_id' => 'required|exists:products,id', 'quantity' => 'required|integer|min:0']);
+        $cart = session()->get('cart', []);
+        $id = (int) $request->product_id;
+        $qty = (int) $request->quantity;
+        if ($qty <= 0) {
+            unset($cart[$id]);
+        } elseif (isset($cart[$id])) {
+            $cart[$id]['quantity'] = $qty;
+        }
+        session()->put('cart', $cart);
+        return back()->with('success', 'سبد به‌روزرسانی شد.');
+    }
+
+    public function removeFromCart(int $productId)
+    {
+        if (! SiteHelper::shopEnabled()) {
+            abort(404);
+        }
+        $cart = session()->get('cart', []);
+        unset($cart[$productId]);
+        session()->put('cart', $cart);
+        return back()->with('success', 'محصول از سبد حذف شد.');
     }
 
     public function checkout(Request $request)

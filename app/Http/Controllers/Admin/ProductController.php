@@ -31,7 +31,8 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+        $categories = \App\Models\ProductCategory::orderBy('order')->get();
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product)
@@ -52,6 +53,7 @@ class ProductController extends Controller
         return $request->validate([
             'title' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:product_categories,id',
             'description' => 'nullable|string',
             'image' => 'nullable|string|max:500',
             'sku' => 'nullable|string|max:100',

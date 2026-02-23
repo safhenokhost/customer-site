@@ -19,10 +19,19 @@ class LicenseController extends Controller
 
     public function update(Request $request, LicenseActivationService $activationService)
     {
-        $request->validate([
-            'license_key' => 'required|string|max:255',
+        $rules = [
+            'license_key' => 'nullable|string|max:255',
             'domain' => 'nullable|string|max:255',
-        ]);
+        ];
+        if (! \App\Helpers\SiteHelper::isOwnerSite()) {
+            $rules['license_key'] = 'required|string|max:255';
+        }
+        $request->validate($rules);
+
+        if (\App\Helpers\SiteHelper::isOwnerSite() && ! $request->filled('license_key')) {
+            PlatformUx::clearCache();
+            return back()->with('success', 'در حالت سایت مالک لایسنس اختیاری است. در صورت نیاز کلید را وارد کنید.');
+        }
 
         $domainRaw = $request->filled('domain') ? $request->domain : $request->getHost();
         $domain = $this->normalizeDomain($domainRaw);

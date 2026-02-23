@@ -6,6 +6,13 @@ return [
     'locale' => env('SITE_LOCALE', 'fa'),
 
     /*
+    | سایت مالک (فروش شما): وقتی true باشد، لایسنس برای کارکرد سایت الزامی نیست.
+    | ماژول‌ها از .env (MODULE_BLOG_ENABLED و غیره) و ظاهر از پیش‌فرض پلتفرم استفاده می‌شود.
+    | در صورت وارد کردن لایسنس، بروزرسانی و UX از پلتفرم دریافت می‌شود.
+    */
+    'owner_site' => filter_var(env('OWNER_SITE', false), FILTER_VALIDATE_BOOLEAN),
+
+    /*
     | آدرس سایت پلتفرم اصلی (saas-platform) — بدون اسلش آخر.
     |
     | کاربرد:
